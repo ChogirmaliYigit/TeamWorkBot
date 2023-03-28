@@ -51,6 +51,22 @@ class Database:
         );
         """
         await self.execute(sql, execute=True)
+    
+    async def create_table_employers(self):
+        sql = """
+        CREATE TABLE IF NOT EXISTS Employers (
+            id SERIAL PRIMARY KEY,
+            phone_number TEXT NOT NULL,
+            password TEXT NOT NULL,
+            person_type VARCHAR(50) NOT NULL,
+            fish TEXT NOT NULL,
+            email TEXT NOT NULL,
+            country VARCHAR(100) NOT NULL,
+            region VARCHAR(300) NOT NULL,
+            city VARCHAR(300) NOT NULL
+        );
+        """
+        await self.execute(sql, execute=True)
 
     @staticmethod
     def format_args(sql, parameters: dict):
@@ -62,6 +78,16 @@ class Database:
     async def add_user(self, full_name, username, telegram_id):
         sql = "INSERT INTO users (full_name, username, telegram_id) VALUES($1, $2, $3) returning *"
         return await self.execute(sql, full_name, username, telegram_id, fetchrow=True)
+    
+    async def add_employer(self, phone_number, password, person_type, fish, email, country, region, city):
+        sql = """
+        INSERT INTO Employers(phone_number, password, person_type, fish, email, country, region, city) VALUES($1, $2, $3, $4, $5, $6, $7, $8) returning *
+        """
+        return await self.execute(sql, phone_number, password, person_type, fish, email, country, region, city, fetchrow=True)
+
+    async def select_employers(self):
+        sql = "SELECT * FROM Employers"
+        return await self.execute(sql, fetch=True)
 
     async def select_all_users(self):
         sql = "SELECT * FROM Users"
